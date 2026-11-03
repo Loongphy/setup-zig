@@ -1,7 +1,30 @@
 # setup-zig
 
-Install the Zig compiler for use in a Forgejo Actions or GitHub Actions workflow, and preserve the Zig cache
-across workflow runs.
+Fork of [mlugg/setup-zig](https://codeberg.org/mlugg/setup-zig) that runs the action on the **node24** Actions
+runtime. Upstream still declares `node20`, which reached end-of-life in April 2026 and was removed from
+GitHub-hosted runners on September 23, 2026 — see [actions/runner](https://github.com/actions/runner) and
+upstream PR [codeberg.org/mlugg/setup-zig/pulls/55](https://codeberg.org/mlugg/setup-zig/pulls/55).
+
+## Which ref to use
+
+| Ref | Resolves to | Use when |
+|---|---|---|
+| `@v3` | latest v3.x tag (moves with minor/patch releases) | **recommended** |
+| `@v3.0.0` | immutable release tag | pinned release |
+| `@main` | HEAD of `main` | always latest |
+| `@node24-lts-runtime` | HEAD of the node24 patch branch | kept for existing workflows; same content as `main` |
+| `@<full commit SHA>` | exact commit | maximum reproducibility |
+
+A branch ref like `@node24-lts-runtime` always resolves to the latest commit on that branch — updates are
+picked up automatically on the next run. The fork tracks upstream: `main` carries the node24 patch on top of
+the latest upstream commit.
+
+## Deprecation
+
+- The `v1.x`/`v2.x` tags and the floating `v1`/`v2` tags are **deprecated**: they declare the removed
+  `node20` runtime and are kept only for history. Migrate to `@v3`.
+- There is no `node26` line yet — the Actions runner does not ship a `node26` runtime. When it does, a
+  `node26-lts-runtime` branch and a new major tag will be added the same way.
 
 ## Usage
 
@@ -11,17 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Test
     steps:
-      - uses: actions/checkout@v3
-      - uses: https://codeberg.org/mlugg/setup-zig@v2
+      - uses: actions/checkout@v5
+      - uses: Loongphy/setup-zig@v3
       - run: zig build test
 ```
-
-> [!IMPORTANT]
-> When using GitHub Actions, the `setup-zig` URL in the example above must be replaced with a simple
-> repository reference, because GitHub Actions does not support Actions hosted outside of GitHub:
-> ```yaml
->       - uses: mlugg/setup-zig@v2
-> ```
 
 This will automatically download Zig and install it to `PATH`.
 
@@ -33,9 +49,9 @@ the Zig version from the `minimum_zig_version` field in `build.zig.zon`, falling
 isn't possible.
 
 ```yaml
-  - uses: https://codeberg.org/mlugg/setup-zig@v2
+  - uses: Loongphy/setup-zig@v3
     with:
-      version: 0.13.0
+      version: 0.17.0
 ```
 
 > [!WARNING]
@@ -45,7 +61,7 @@ isn't possible.
 If you want to use one specific mirror, you can set it using the `mirror` option:
 
 ```yaml
-  - uses: https://codeberg.org/mlugg/setup-zig@v2
+  - uses: Loongphy/setup-zig@v3
     with:
       mirror: 'https://pkg.machengine.org/zig'
 ```
