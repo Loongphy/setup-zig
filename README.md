@@ -9,10 +9,9 @@ upstream PR [codeberg.org/mlugg/setup-zig/pulls/55](https://codeberg.org/mlugg/s
 
 | Ref | Resolves to | Use when |
 |---|---|---|
-| `@v3` | latest v3.x tag (moves with minor/patch releases) | **recommended** |
-| `@v3.0.0` | immutable release tag | pinned release |
+| `@node24-lts-runtime` | HEAD of the node24 patch branch | **recommended** — tracks the node24 runtime line, same content as `main` |
 | `@main` | HEAD of `main` | always latest |
-| `@node24-lts-runtime` | HEAD of the node24 patch branch | kept for existing workflows; same content as `main` |
+| `@v3` / `@v3.0.0` | release tags | immutable pin |
 | `@<full commit SHA>` | exact commit | maximum reproducibility |
 
 A branch ref like `@node24-lts-runtime` always resolves to the latest commit on that branch — updates are
@@ -22,7 +21,7 @@ the latest upstream commit.
 ## Deprecation
 
 - The `v1.x`/`v2.x` tags and the floating `v1`/`v2` tags are **deprecated**: they declare the removed
-  `node20` runtime and are kept only for history. Migrate to `@v3`.
+  `node20` runtime and are kept only for history. Migrate to `@node24-lts-runtime` or `@v3`.
 - There is no `node26` line yet — the Actions runner does not ship a `node26` runtime. When it does, a
   `node26-lts-runtime` branch and a new major tag will be added the same way.
 
@@ -35,7 +34,7 @@ jobs:
     name: Build and Test
     steps:
       - uses: actions/checkout@v5
-      - uses: Loongphy/setup-zig@v3
+      - uses: Loongphy/setup-zig@node24-lts-runtime
       - run: zig build test
 ```
 
@@ -49,7 +48,7 @@ the Zig version from the `minimum_zig_version` field in `build.zig.zon`, falling
 isn't possible.
 
 ```yaml
-  - uses: Loongphy/setup-zig@v3
+  - uses: Loongphy/setup-zig@node24-lts-runtime
     with:
       version: 0.17.0
 ```
@@ -61,7 +60,7 @@ isn't possible.
 If you want to use one specific mirror, you can set it using the `mirror` option:
 
 ```yaml
-  - uses: Loongphy/setup-zig@v3
+  - uses: Loongphy/setup-zig@node24-lts-runtime
     with:
       mirror: 'https://pkg.machengine.org/zig'
 ```
